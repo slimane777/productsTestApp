@@ -16,7 +16,7 @@ function App(props) {
 
     useEffect(()=>{
         console.log('ok here')
-        console.log(props.products)
+        console.log(props)
         setProducts(props.products)
     }, [])
 
