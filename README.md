@@ -6,6 +6,8 @@ to test :
 
 - yarn install
 
+- cd ios && pod install && cd ..
+
 - yarn ios
 
 ps: only tested it on ios
