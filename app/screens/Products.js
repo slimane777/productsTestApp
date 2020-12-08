@@ -3,37 +3,91 @@ import {
 	StyleSheet,
 	Text,
 	View,
-	TouchableOpacity,
-	TextInput
+	ActivityIndicator,
 } from 'react-native';
 import {connect} from "react-redux";
 import { FlatGrid } from 'react-native-super-grid';
 import ProductItem from '../components/ProductItem';
+import SortOptions from '../components/SortOptions';
+import * as productsActions from '../actions/products';
+import { bindActionCreators } from 'redux';
 
 function App(props) {
 
-    const [products, setProducts] = useState([])
+    const [offset, setOffset] = useState(1);
 
     useEffect(()=>{
-        console.log('ok here')
-        console.log(props)
-        setProducts(props.products)
-    }, [])
+
+        console.log(offset)
+        props.actions.getProducts(offset, 20, '');
+
+    }, [offset])
+
+    function clear(offset) {
+        console.log(offset)
+        setOffset(offset);
+      }
+
+    const renderFooter = () => {
+
+        if(props?.endReached){
+            return (
+                <Text style={styles.endMessage}>
+                    ~ end of catalogue ~
+                </Text>
+            )
+        }
+
+        return (
+          // Footer View with Loader
+          <View style={styles.footer}>
+            {props?.loadingMore ? (
+                <View style={styles.loader}>
+                    <ActivityIndicator
+                        color="black"
+                        style={{margin: 15}} />
+                    <Text style={styles.loaderText}>
+                        Loading...
+                    </Text>
+                </View>
+            ) : null}
+          </View>
+        );
+      };
 
     return(
         <View style={{ width: '100%', height: '100%' }}>
             <Text style={styles.title}>Products</Text>
-            <FlatGrid
-                itemDimension={130}
-                data={products}
-                style={styles.gridView}
-                // staticDimension={300}
-                // fixed
-                spacing={10}
-                renderItem={({ item }) => (
-                    <ProductItem item={item} />
-                )}
-            />
+
+            <View style={styles.filters}>
+                <Text style={styles.sort}>Sort by</Text>
+                <SortOptions props={props}  onClear={clear}/>
+            </View>
+
+            {
+                props?.loading ?
+                    <View style={styles.loading}>
+                        <ActivityIndicator size='large' color='#393e46' />
+                    </View>
+                :
+                    <FlatGrid
+                        itemDimension={130}
+                        data={props.products}
+                        style={styles.gridView}
+                        spacing={10}
+                        renderItem={({ index, item }) => (
+                            <ProductItem item={item} index={index} />
+                        )}
+                        ListFooterComponent={()=>renderFooter()}
+                        onEndReached={()=>{
+                            if(!props?.endReached){
+                                setOffset(offset+1);
+                            }
+                        }}
+                        onEndReachedThreshold={0.01}
+                        
+                    />
+            }
         </View>
     )
 }
@@ -48,11 +102,49 @@ const styles = StyleSheet.create({
         fontWeight: '900',
         color: '#393e46',
         padding: 15
+    },
+    sort: {
+        fontSize: 17,
+        fontWeight: '600',
+        color: '#393e46',
+        flex: 1,
+    },
+    filters: {
+        flexDirection: 'row', alignItems: 'center',
+        paddingHorizontal: 15, 
+    },
+    loading: {
+        flex: 1, alignItems: 'center', justifyContent: 'center',
+        marginBottom: 20,
+        padding: 20
+    },
+    loader: {
+        alignItems: 'center'
+    },
+    loaderText: {
+        color: 'black',
+        fontSize: 15,
+        textAlign: 'center',
+    },
+    endMessage: {
+        textAlign: 'center', fontSize: 17, 
+        padding: 20, color: 'black', fontWeight: '600',
     }
 });
 
 const mapStateToProps = state => ({
     products: state.products.products,
+    loading: state.products.loading,
+    loadingMore: state.products.loadingMore,
+    endReached: state.products.endReached,
 });
+
+const ActionCreators = Object.assign(
+    {},
+    productsActions,
+  );
+  const mapDispatchToProps = dispatch => ({
+    actions: bindActionCreators(ActionCreators, dispatch),
+  });
     
-export default connect(mapStateToProps,null)(App)
+export default connect(mapStateToProps,mapDispatchToProps)(App)

@@ -12,16 +12,7 @@ import Products from './screens/Products';
 
 class App extends Component {
 
-  componentDidMount(){
-    let { actions } = this.props;
-    actions.getProducts(1, 10, '');
-  }
-
   render() {
-
-    const { products } = this.props;
-    console.log('productsapp')
-    console.log(products)
     return (
       <SafeAreaView styles={styles.container}>
             <Products />

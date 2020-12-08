@@ -1,13 +1,19 @@
 import { PRODUCTS } from '../constants';
 const initialState = {
-    products: []
+    products: [],
+    loading: true,
+    loadingMore: false,
+    endReached: false
 };
 const productsReducer = (state = initialState, action) => {
     switch(action.type) {
         case PRODUCTS:
             return {
                 ...state,
-                products: action.payload
+                products: action.payload,
+                loading: action.loading,
+                loadingMore: action.loadingMore,
+                endReached: action.endReached,
             };
         default:
             return state;
