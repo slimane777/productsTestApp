@@ -10,6 +10,7 @@ function SortOptions({props, onClear}) {
 
     const [sort, setSort] = useState('');
 
+    // sort products
     const selectSort = (item) => {
         onClear(1)
         if(item == 'clear'){

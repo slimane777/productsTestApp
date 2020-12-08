@@ -18,18 +18,18 @@ function App(props) {
 
     useEffect(()=>{
 
-        console.log(offset)
+        // get products
         props.actions.getProducts(offset, 20, '');
 
     }, [offset])
 
     function clear(offset) {
-        console.log(offset)
+        // clear filters
         setOffset(offset);
       }
 
     const renderFooter = () => {
-
+        // display this when there is no more data
         if(props?.endReached){
             return (
                 <Text style={styles.endMessage}>
@@ -38,8 +38,9 @@ function App(props) {
             )
         }
 
+        // display loader
         return (
-          // Footer View with Loader
+          
           <View style={styles.footer}>
             {props?.loadingMore ? (
                 <View style={styles.loader}>
@@ -65,6 +66,7 @@ function App(props) {
             </View>
 
             {
+                // when loading first time
                 props?.loading ?
                     <View style={styles.loading}>
                         <ActivityIndicator size='large' color='#393e46' />
@@ -80,6 +82,7 @@ function App(props) {
                         )}
                         ListFooterComponent={()=>renderFooter()}
                         onEndReached={()=>{
+                            // update offset as long as the data keep coming
                             if(!props?.endReached){
                                 setOffset(offset+1);
                             }

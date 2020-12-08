@@ -9,18 +9,22 @@ import { BASE_URL } from '../constants';
 
 function timeDifference(current, previous) {
 
+    // getting the exact date to use when its older than a week
     var rDate = new Date(previous);
     rDate.setDate(rDate.getDate() + 1);
     var exactDate = ('0'+(rDate.getDate())).slice(-2)+'/'+('0'+(rDate.getMonth()+1)).slice(-2)+'/'+rDate.getFullYear();
     
+    // needed for comparing
     var msPerMinute = 60 * 1000;
     var msPerHour = msPerMinute * 60;
     var msPerDay = msPerHour * 24;
     var msPerMonth = msPerDay * 30;
     var msPerYear = msPerDay * 365;
 
+    // getting the difference
     var elapsed = current - previous;
 
+    // comparing to know what to display
     if (elapsed < msPerMinute) {
          return Math.round(elapsed/1000) + ' seconds ago';   
     }
@@ -47,43 +51,29 @@ function ProductItem({item, index}) {
 
     const [price, setPrice] = useState('');
     const [date, setDate] = useState('');
-    const [ad, setAd] = useState(0);
 
     useEffect(()=>{
 
-        console.log(index)
-
+        // formatting the price from cent to dollar 
         let formatedPrice = item.price
         formatedPrice /= 100
         formatedPrice.toLocaleString("en-US", {style:"currency", currency:"USD"})
         setPrice(formatedPrice)
 
+        // calling timeDifference() function to format the date
         const publishDate = new Date(item.date);
-
         setDate(timeDifference(new Date(), publishDate))
 
     }, [])
 
-    const updateAd = () => {
-        let r = Math.floor(Math.random()*1000)
-
-        if(ad == r){
-            r = Math.floor(Math.random()*1000)+1
-            setAd(r) 
-        }else{
-          setAd(r)  
-        }
-    }
-
+    // show add once every 20 items, used math random + index to totally randomize the add 
     if(index % 20 == 0 && index != 0){
-        
-        updateAd()
 
        return ( 
             <View style={[styles.itemContainer, {backgroundColor: '#d0e8f2', overflow: 'hidden'}]}>
 
                 <Image 
-                    source={{uri: BASE_URL+'/ads/?r='+ad}} 
+                    source={{uri: BASE_URL+'/ads/?r='+(Math.floor(Math.random()*1000)+index)}} 
                     resizeMode='cover'
                     style={{
                         width: '100%', height: '100%',

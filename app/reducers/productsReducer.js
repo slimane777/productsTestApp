@@ -1,10 +1,14 @@
 import { PRODUCTS } from '../constants';
+
+// initial state
 const initialState = {
     products: [],
     loading: true,
     loadingMore: false,
     endReached: false
 };
+
+// update state
 const productsReducer = (state = initialState, action) => {
     switch(action.type) {
         case PRODUCTS:
